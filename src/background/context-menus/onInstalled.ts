@@ -46,6 +46,15 @@ export async function onInstalled() {
   });
 
   chrome.contextMenus.create({
+    id: "toggle-moveActiveTabToRightBeforeNewTab",
+    parentId: "sort-menu",
+    title: "Active Tab to Right (Before New Tab)",
+    type: "checkbox",
+    checked: settings.moveActiveTabToRightBeforeNewTab,
+    contexts: ["action"],
+  });
+
+  chrome.contextMenus.create({
     id: "toggle-moveActiveTabToRightWithinGroup",
     parentId: "sort-menu",
     title: "Move Active Tab to Right (In Group)",

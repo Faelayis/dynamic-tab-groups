@@ -33,7 +33,7 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
           }
         }
       } else if (activeGroupId === chrome.tabGroups.TAB_GROUP_ID_NONE) {
-        if (settings.moveActiveTabToRight) {
+        if (settings.moveActiveTabToRight || settings.moveActiveTabToRightBeforeNewTab) {
           if (!(await isChromeStartup())) {
             const allTabs = await chrome.tabs.query({ windowId: activeTab.windowId });
             const ungroupedTabs = allTabs.filter(
@@ -42,11 +42,30 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
                 !(settings.ignorePinnedTabs && t.pinned),
             );
             if (ungroupedTabs.length > 1) {
-              const maxIndex = Math.max(...ungroupedTabs.map((t) => t.index));
-              if (activeTab.index < maxIndex && activeTab.id !== undefined) {
+              let targetIndex = Math.max(...ungroupedTabs.map((t) => t.index));
+
+              if (settings.moveActiveTabToRightBeforeNewTab) {
+                const sortedUngrouped = [...ungroupedTabs].sort(
+                  (a, b) => a.index - b.index,
+                );
+                while (sortedUngrouped.length > 0) {
+                  const lastTab = sortedUngrouped[sortedUngrouped.length - 1];
+                  const url = lastTab.pendingUrl || lastTab.url || "";
+                  const isNewTab = url === "chrome://newtab/" || url === "edge://newtab/";
+
+                  if (isNewTab && lastTab.id !== activeTab.id) {
+                    sortedUngrouped.pop();
+                    targetIndex = lastTab.index - 1;
+                  } else {
+                    break;
+                  }
+                }
+              }
+
+              if (activeTab.index < targetIndex && activeTab.id !== undefined) {
                 await chrome.tabs.move(activeTab.id, {
                   windowId: activeTab.windowId,
-                  index: maxIndex,
+                  index: targetIndex,
                 });
               }
             }

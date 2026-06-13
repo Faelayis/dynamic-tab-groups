@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   sortGroupsAlphabetically: false,
   moveActiveTabToRight: true,
   moveActiveTabToRightGroup: true,
+  moveActiveTabToRightBeforeNewTab: false,
   ignorePinnedTabs: true,
   groupChromePages: false,
   collapseGroupsWhenNotInUse: false,

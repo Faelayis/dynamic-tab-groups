@@ -21,6 +21,7 @@ export interface ExtensionSettings {
   sortGroupsAlphabetically: boolean;
   moveActiveTabToRight: boolean;
   moveActiveTabToRightGroup: boolean;
+  moveActiveTabToRightBeforeNewTab: boolean;
   ignorePinnedTabs: boolean;
   groupChromePages: boolean;
   collapseGroupsWhenNotInUse: boolean;
