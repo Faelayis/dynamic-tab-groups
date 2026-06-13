@@ -1,0 +1,18 @@
+{
+  "name": "dynamic-tab-groups",
+  "version": "0.1.0",
+  "description": "Chrome extension that auto-groups tabs by domain with favicon-based colors",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun run scripts/build.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/chrome": "latest",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/node": "^25.9.3"
+  }
+}
