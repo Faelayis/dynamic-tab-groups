@@ -1,0 +1,39 @@
+name: Format
+
+on:
+   push:
+   pull_request:
+
+jobs:
+   format:
+      runs-on: ubuntu-latest
+      permissions:
+         contents: write
+
+      steps:
+         - name: Checkout Repository
+           uses: actions/checkout@v6
+
+         - name: Setup Bun
+           uses: oven-sh/setup-bun@v2
+           with:
+              bun-version-file: package.json
+
+         - name: Cache bun install
+           uses: actions/cache@v4
+           with:
+              path: ~/.bun/install/cache
+              key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+              restore-keys: |
+                 ${{ runner.os }}-bun-
+
+         - name: Install Dependencies
+           run: bun install
+
+         - name: Format Code
+           run: bun run format
+
+         - name: Auto Commit Formatting Changes
+           uses: stefanzweifel/git-auto-commit-action@v7
+           with:
+              commit_message: "style: format code"
