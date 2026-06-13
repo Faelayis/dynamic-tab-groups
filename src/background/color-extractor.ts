@@ -1,13 +1,10 @@
 import type { RGB, TabGroupColor } from "../shared/types.ts";
 
-
 const colorCache = new Map<string, TabGroupColor>();
-
 
 export function getCachedColor(domain: string): TabGroupColor | undefined {
   return colorCache.get(domain);
 }
-
 
 export async function extractDominantColor(
   pageUrl: string,
@@ -55,7 +52,6 @@ interface FilterOptions {
   maxBrightness: number;
 }
 
-
 function computeDominantColor(data: Uint8ClampedArray): RGB {
   return (
     extractFromPixels(data, {
@@ -72,16 +68,11 @@ function computeDominantColor(data: Uint8ClampedArray): RGB {
       minSaturation: 0,
       minBrightness: 0,
       maxBrightness: 255,
-    }) ??
-    { r: 154, g: 160, b: 166 } 
+    }) ?? { r: 154, g: 160, b: 166 }
   );
 }
 
-
-function extractFromPixels(
-  data: Uint8ClampedArray,
-  filters: FilterOptions,
-): RGB | null {
+function extractFromPixels(data: Uint8ClampedArray, filters: FilterOptions): RGB | null {
   const BUCKET_SIZE = 32;
   const buckets = new Map<
     string,
@@ -133,8 +124,7 @@ function extractFromPixels(
 
   if (buckets.size === 0) return null;
 
-  let best: (typeof buckets extends Map<string, infer V> ? V : never) | null =
-    null;
+  let best: (typeof buckets extends Map<string, infer V> ? V : never) | null = null;
   let bestScore = -1;
 
   for (const bucket of buckets.values()) {
@@ -154,7 +144,6 @@ function extractFromPixels(
     b: Math.round(best.totalB / best.count),
   };
 }
-
 
 interface HSL {
   h: number;
@@ -188,7 +177,6 @@ function rgbToHsl(rgb: RGB): HSL {
   return { h, s, l };
 }
 
-
 function mapToClosestChromeColor(color: RGB): TabGroupColor {
   const { h, s, l } = rgbToHsl(color);
 
@@ -202,5 +190,5 @@ function mapToClosestChromeColor(color: RGB): TabGroupColor {
   if (h < 265) return "blue";
   if (h < 310) return "purple";
   if (h < 345) return "pink";
-  return "red"; 
+  return "red";
 }

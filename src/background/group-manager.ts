@@ -1,6 +1,5 @@
 import type { TabGroupColor } from "../shared/types.ts";
 
-
 export async function createOrUpdateGroup(
   windowId: number,
   tabIds: number[],
@@ -29,11 +28,14 @@ export async function createOrUpdateGroup(
   if (existingGroupId !== undefined) {
     try {
       const existingGroup = await chrome.tabGroups.get(existingGroupId);
-      if (existingGroup.title && existingGroup.title.toLowerCase() === title.toLowerCase()) {
+      if (
+        existingGroup.title &&
+        existingGroup.title.toLowerCase() === title.toLowerCase()
+      ) {
         groupTitle = existingGroup.title;
       }
     } catch {
-      // 
+      //
     }
   }
 
@@ -42,7 +44,6 @@ export async function createOrUpdateGroup(
   return groupId;
 }
 
-
 export async function ungroupTabs(tabIds: number[]): Promise<void> {
   if (tabIds.length === 0) return;
 
@@ -50,11 +51,9 @@ export async function ungroupTabs(tabIds: number[]): Promise<void> {
   await chrome.tabs.ungroup(tabIdsTuple);
 }
 
-
 export function isTabGrouped(tab: chrome.tabs.Tab): boolean {
   return tab.groupId !== undefined && tab.groupId !== -1;
 }
-
 
 export async function findGroupByTitle(
   windowId: number,
@@ -62,9 +61,8 @@ export async function findGroupByTitle(
 ): Promise<number | undefined> {
   try {
     const groups = await chrome.tabGroups.query({ windowId });
-    const groupInWindow = groups.find((g) => 
-      g.windowId === windowId && 
-      g.title?.toLowerCase() === title.toLowerCase()
+    const groupInWindow = groups.find(
+      (g) => g.windowId === windowId && g.title?.toLowerCase() === title.toLowerCase(),
     );
     return groupInWindow?.id;
   } catch {

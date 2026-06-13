@@ -1,4 +1,8 @@
-export async function handleSiteNameReport(message: any, sender: chrome.runtime.MessageSender, settings: any) {
+export async function handleSiteNameReport(
+  message: any,
+  sender: chrome.runtime.MessageSender,
+  settings: any,
+) {
   if (!settings.renameGroupToSiteName) return;
 
   const tabId = sender.tab?.id;
@@ -12,12 +16,14 @@ export async function handleSiteNameReport(message: any, sender: chrome.runtime.
       if (siteName.length <= 25) {
         const group = await chrome.tabGroups.get(groupId);
         if (group.title !== siteName) {
-           await chrome.tabGroups.update(groupId, { title: siteName });
-           console.log(`[Dynamic Tab Groups] Renamed group ${groupId} to site name: ${siteName}`);
+          await chrome.tabGroups.update(groupId, { title: siteName });
+          console.log(
+            `[Dynamic Tab Groups] Renamed group ${groupId} to site name: ${siteName}`,
+          );
         }
       }
     }
   } catch (error) {
-    // 
+    //
   }
 }

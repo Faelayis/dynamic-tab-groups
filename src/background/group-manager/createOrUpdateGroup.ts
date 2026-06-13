@@ -28,11 +28,14 @@ export async function createOrUpdateGroup(
   if (existingGroupId !== undefined) {
     try {
       const existingGroup = await chrome.tabGroups.get(existingGroupId);
-      if (existingGroup.title && existingGroup.title.toLowerCase() === title.toLowerCase()) {
+      if (
+        existingGroup.title &&
+        existingGroup.title.toLowerCase() === title.toLowerCase()
+      ) {
         groupTitle = existingGroup.title;
       }
     } catch {
-      // 
+      //
     }
   }
 

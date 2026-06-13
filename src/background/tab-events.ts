@@ -14,7 +14,7 @@ export function setupTabEvents() {
   chrome.tabs.onRemoved.addListener(onRemoved);
   chrome.tabs.onAttached.addListener(onAttached);
   chrome.tabs.onDetached.addListener(onDetached);
-  
+
   chrome.windows.onBoundsChanged.addListener(onBoundsChanged);
   chrome.storage.onChanged.addListener(onStorageChanged);
 }

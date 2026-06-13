@@ -9,7 +9,6 @@ export async function getSettings(): Promise<ExtensionSettings> {
   return { ...DEFAULT_SETTINGS, ...stored };
 }
 
-
 export async function setSettings(
   updates: Partial<ExtensionSettings>,
 ): Promise<ExtensionSettings> {

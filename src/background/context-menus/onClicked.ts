@@ -3,7 +3,7 @@ import { evaluateAllWindows } from "../tab-manager/evaluation.ts";
 
 export async function onClicked(info: chrome.contextMenus.OnClickData) {
   const key = info.menuItemId as string;
-  
+
   if (key === "reload-all") {
     chrome.tabs.query({}, (tabs) => {
       for (const tab of tabs) {

@@ -11,7 +11,7 @@ export async function groupDomainTabs(
   domain: string,
   tabIds: number[],
   allTabs: chrome.tabs.Tab[],
-  settings: { groupChromePages: boolean }
+  settings: { groupChromePages: boolean },
 ): Promise<void> {
   const existingGroupId = await findGroupByTitle(windowId, domain);
   const color = await resolveColor(domain, allTabs, settings);
@@ -57,7 +57,7 @@ export async function maybeUngroupSingleTab(
 export async function resolveColor(
   domain: string,
   tabs: chrome.tabs.Tab[],
-  settings: { groupChromePages: boolean }
+  settings: { groupChromePages: boolean },
 ): Promise<TabGroupColor> {
   const tabWithUrl = tabs.find((t) => {
     if (!t.url) return false;
@@ -69,7 +69,10 @@ export async function resolveColor(
   return extractDominantColor(tabWithUrl.url, domain);
 }
 
-export async function enforceGroupSortOrder(windowId: number, tabs: chrome.tabs.Tab[]): Promise<void> {
+export async function enforceGroupSortOrder(
+  windowId: number,
+  tabs: chrome.tabs.Tab[],
+): Promise<void> {
   try {
     let groups = await chrome.tabGroups.query({ windowId });
     groups = groups.filter((g) => g.windowId === windowId);
@@ -79,15 +82,23 @@ export async function enforceGroupSortOrder(windowId: number, tabs: chrome.tabs.
     let minGroupIndex = Infinity;
 
     for (const tab of tabs) {
-      if (tab.groupId !== undefined && tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
+      if (
+        tab.groupId !== undefined &&
+        tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
+      ) {
         minGroupIndex = Math.min(minGroupIndex, tab.index);
-        if (currentOrder.length === 0 || currentOrder[currentOrder.length - 1] !== tab.groupId) {
+        if (
+          currentOrder.length === 0 ||
+          currentOrder[currentOrder.length - 1] !== tab.groupId
+        ) {
           currentOrder.push(tab.groupId);
         }
       }
     }
 
-    const sortedGroups = [...groups].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    const sortedGroups = [...groups].sort((a, b) =>
+      (a.title || "").localeCompare(b.title || ""),
+    );
     const sortedIds = sortedGroups.map((g) => g.id);
 
     let isSorted = true;

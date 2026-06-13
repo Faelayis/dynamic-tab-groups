@@ -17,7 +17,6 @@ export function computeDominantColor(data: Uint8ClampedArray): RGB {
       minSaturation: 0,
       minBrightness: 0,
       maxBrightness: 255,
-    }) ??
-    { r: 154, g: 160, b: 166 } 
+    }) ?? { r: 154, g: 160, b: 166 }
   );
 }

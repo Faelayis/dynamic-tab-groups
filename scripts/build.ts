@@ -18,7 +18,7 @@ async function build(): Promise<void> {
   const bgResult = await Bun.build({
     entrypoints: [
       join(SRC_DIR, "background", "background.ts"),
-      join(SRC_DIR, "content", "content.ts")
+      join(SRC_DIR, "content", "content.ts"),
     ],
     outdir: OUT_DIR,
     target: "browser",

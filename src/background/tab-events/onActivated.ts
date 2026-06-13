@@ -14,14 +14,20 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
         return;
       }
 
-      if (activeGroupId !== undefined && activeGroupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
+      if (
+        activeGroupId !== undefined &&
+        activeGroupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
+      ) {
         if (settings.moveActiveTabToRightGroup) {
           if (!(await isChromeStartup())) {
             const groupTabs = await chrome.tabs.query({ groupId: activeGroupId });
             if (groupTabs.length > 1) {
               const maxIndex = Math.max(...groupTabs.map((t) => t.index));
               if (activeTab.index < maxIndex && activeTab.id !== undefined) {
-                await chrome.tabs.move(activeTab.id, { windowId: activeTab.windowId, index: maxIndex });
+                await chrome.tabs.move(activeTab.id, {
+                  windowId: activeTab.windowId,
+                  index: maxIndex,
+                });
               }
             }
           }
@@ -30,14 +36,18 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
         if (settings.moveActiveTabToRight) {
           if (!(await isChromeStartup())) {
             const allTabs = await chrome.tabs.query({ windowId: activeTab.windowId });
-            const ungroupedTabs = allTabs.filter(t => 
-              t.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE &&
-              !(settings.ignorePinnedTabs && t.pinned)
+            const ungroupedTabs = allTabs.filter(
+              (t) =>
+                t.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE &&
+                !(settings.ignorePinnedTabs && t.pinned),
             );
             if (ungroupedTabs.length > 1) {
               const maxIndex = Math.max(...ungroupedTabs.map((t) => t.index));
               if (activeTab.index < maxIndex && activeTab.id !== undefined) {
-                await chrome.tabs.move(activeTab.id, { windowId: activeTab.windowId, index: maxIndex });
+                await chrome.tabs.move(activeTab.id, {
+                  windowId: activeTab.windowId,
+                  index: maxIndex,
+                });
               }
             }
           }

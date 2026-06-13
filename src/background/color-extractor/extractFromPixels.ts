@@ -61,8 +61,7 @@ export function extractFromPixels(
 
   if (buckets.size === 0) return null;
 
-  let best: (typeof buckets extends Map<string, infer V> ? V : never) | null =
-    null;
+  let best: (typeof buckets extends Map<string, infer V> ? V : never) | null = null;
   let bestScore = -1;
 
   for (const bucket of buckets.values()) {

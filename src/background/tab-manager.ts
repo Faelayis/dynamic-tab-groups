@@ -11,7 +11,6 @@ import {
 
 const pendingEvaluations = new Map<number, ReturnType<typeof setTimeout>>();
 
-
 export function scheduleEvaluation(windowId: number, delayMs = 500): void {
   const existing = pendingEvaluations.get(windowId);
   if (existing !== undefined) {
@@ -29,7 +28,6 @@ export function scheduleEvaluation(windowId: number, delayMs = 500): void {
   );
 }
 
-
 export async function evaluateAllWindows(): Promise<void> {
   const windows = await chrome.windows.getAll({ windowTypes: ["normal"] });
   for (const win of windows) {
@@ -39,21 +37,28 @@ export async function evaluateAllWindows(): Promise<void> {
   }
 }
 
-
-export async function getDisplayIdForWindow(windowId: number): Promise<string | undefined> {
+export async function getDisplayIdForWindow(
+  windowId: number,
+): Promise<string | undefined> {
   try {
     const displays = await chrome.system.display.getInfo();
     const win = await chrome.windows.get(windowId);
 
-    if (win.left !== undefined && win.top !== undefined && win.width !== undefined && win.height !== undefined) {
+    if (
+      win.left !== undefined &&
+      win.top !== undefined &&
+      win.width !== undefined &&
+      win.height !== undefined
+    ) {
       const centerX = win.left + win.width / 2;
       const centerY = win.top + win.height / 2;
 
-      const display = displays.find((d) =>
-        centerX >= d.bounds.left &&
-        centerX < d.bounds.left + d.bounds.width &&
-        centerY >= d.bounds.top &&
-        centerY < d.bounds.top + d.bounds.height
+      const display = displays.find(
+        (d) =>
+          centerX >= d.bounds.left &&
+          centerX < d.bounds.left + d.bounds.width &&
+          centerY >= d.bounds.top &&
+          centerY < d.bounds.top + d.bounds.height,
       );
       return display?.id;
     }
@@ -126,7 +131,10 @@ async function evaluateWindow(windowId: number): Promise<void> {
   }
 }
 
-async function enforceGroupSortOrder(windowId: number, tabs: chrome.tabs.Tab[]): Promise<void> {
+async function enforceGroupSortOrder(
+  windowId: number,
+  tabs: chrome.tabs.Tab[],
+): Promise<void> {
   try {
     let groups = await chrome.tabGroups.query({ windowId });
     groups = groups.filter((g) => g.windowId === windowId);
@@ -136,15 +144,23 @@ async function enforceGroupSortOrder(windowId: number, tabs: chrome.tabs.Tab[]):
     let minGroupIndex = Infinity;
 
     for (const tab of tabs) {
-      if (tab.groupId !== undefined && tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE) {
+      if (
+        tab.groupId !== undefined &&
+        tab.groupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
+      ) {
         minGroupIndex = Math.min(minGroupIndex, tab.index);
-        if (currentOrder.length === 0 || currentOrder[currentOrder.length - 1] !== tab.groupId) {
+        if (
+          currentOrder.length === 0 ||
+          currentOrder[currentOrder.length - 1] !== tab.groupId
+        ) {
           currentOrder.push(tab.groupId);
         }
       }
     }
 
-    const sortedGroups = [...groups].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    const sortedGroups = [...groups].sort((a, b) =>
+      (a.title || "").localeCompare(b.title || ""),
+    );
     const sortedIds = sortedGroups.map((g) => g.id);
 
     let isSorted = true;
@@ -173,7 +189,7 @@ async function groupDomainTabs(
   domain: string,
   tabIds: number[],
   allTabs: chrome.tabs.Tab[],
-  settings: { groupChromePages: boolean }
+  settings: { groupChromePages: boolean },
 ): Promise<void> {
   const existingGroupId = await findGroupByTitle(windowId, domain);
   const color = await resolveColor(domain, allTabs, settings);
@@ -219,7 +235,7 @@ async function maybeUngroupSingleTab(
 async function resolveColor(
   domain: string,
   tabs: chrome.tabs.Tab[],
-  settings: { groupChromePages: boolean }
+  settings: { groupChromePages: boolean },
 ): Promise<TabGroupColor> {
   const tabWithUrl = tabs.find((t) => {
     if (!t.url) return false;

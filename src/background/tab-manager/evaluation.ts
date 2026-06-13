@@ -1,7 +1,11 @@
 import { extractDomain } from "../../shared/domain/index.ts";
 import { getSettings } from "../../shared/storage/index.ts";
 import { getDisplayIdForWindow } from "./display.ts";
-import { enforceGroupSortOrder, groupDomainTabs, maybeUngroupSingleTab } from "./grouping.ts";
+import {
+  enforceGroupSortOrder,
+  groupDomainTabs,
+  maybeUngroupSingleTab,
+} from "./grouping.ts";
 
 const pendingEvaluations = new Map<number, ReturnType<typeof setTimeout>>();
 
@@ -39,7 +43,9 @@ export async function evaluateWindow(windowId: number): Promise<void> {
   console.log("Window is on display:", displayId);
 
   if (!displayId) {
-    console.log(`[Dynamic Tab Groups] Window ${windowId} is off-screen. Skipping evaluation.`);
+    console.log(
+      `[Dynamic Tab Groups] Window ${windowId} is off-screen. Skipping evaluation.`,
+    );
     return;
   }
 

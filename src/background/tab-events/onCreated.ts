@@ -7,7 +7,8 @@ export async function onCreated(tab: chrome.tabs.Tab) {
 
   if (!settings.useUuidTracker) {
     const isFromLink = tab.openerTabId !== undefined;
-    const isNewTabPage = tab.pendingUrl === "chrome://newtab/" || tab.url === "chrome://newtab/";
+    const isNewTabPage =
+      tab.pendingUrl === "chrome://newtab/" || tab.url === "chrome://newtab/";
 
     if (isFromLink || isNewTabPage) {
       setTimeout(async () => {
@@ -17,7 +18,9 @@ export async function onCreated(tab: chrome.tabs.Tab) {
         } catch {}
       }, 200);
     } else {
-      console.log(`[Dynamic Tab Groups] onCreated - Ignored non-human tab creation: ${tab.id}`);
+      console.log(
+        `[Dynamic Tab Groups] onCreated - Ignored non-human tab creation: ${tab.id}`,
+      );
     }
   }
 

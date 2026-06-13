@@ -14,5 +14,5 @@ export function mapToClosestChromeColor(color: RGB): TabGroupColor {
   if (h < 265) return "blue";
   if (h < 310) return "purple";
   if (h < 345) return "pink";
-  return "red"; 
+  return "red";
 }

@@ -6,7 +6,7 @@ export function extractAndReportSiteName() {
       if (siteName && siteName.trim() !== "") {
         chrome.runtime.sendMessage({
           type: "OG_SITE_NAME_REPORT",
-          siteName: siteName.trim()
+          siteName: siteName.trim(),
         });
       }
     }

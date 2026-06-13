@@ -9,7 +9,6 @@ export type TabGroupColor =
   | "cyan"
   | "orange";
 
-
 export interface RGB {
   readonly r: number;
   readonly g: number;

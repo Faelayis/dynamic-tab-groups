@@ -1,6 +1,5 @@
 import type { ExtensionSettings, RGB, TabGroupColor } from "./types.ts";
 
-
 export const CHROME_GROUP_COLORS: Record<TabGroupColor, RGB> = {
   grey: { r: 154, g: 160, b: 166 },
   blue: { r: 66, g: 133, b: 244 },
@@ -12,7 +11,6 @@ export const CHROME_GROUP_COLORS: Record<TabGroupColor, RGB> = {
   cyan: { r: 0, g: 172, b: 193 },
   orange: { r: 255, g: 112, b: 67 },
 } as const;
-
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   enabled: true,
@@ -26,9 +24,6 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   useUuidTracker: false,
   renameGroupToSiteName: false,
 } as const;
-
-
-
 
 export const IGNORED_PROTOCOLS = new Set([
   "chrome:",

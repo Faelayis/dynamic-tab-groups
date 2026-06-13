@@ -1,6 +1,5 @@
 import { IGNORED_PROTOCOLS } from "./constants.ts";
 
-
 export function extractDomain(url: string, groupChromePages = false): string | null {
   try {
     const parsed = new URL(url);
@@ -20,7 +19,7 @@ export function extractDomain(url: string, groupChromePages = false): string | n
 
     hostname = hostname.replace(
       /\.(com|net|org|co|io|me|th|uk|in|us|app|dev|ac|edu|gov|tv|xyz|info|biz|site|tech|online|ai)(\.[a-z]{2})?$/i,
-      ""
+      "",
     );
 
     return hostname;

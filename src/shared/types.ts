@@ -1,4 +1,3 @@
-
 export type TabGroupColor =
   | "grey"
   | "blue"
@@ -10,13 +9,11 @@ export type TabGroupColor =
   | "cyan"
   | "orange";
 
-
 export interface RGB {
   readonly r: number;
   readonly g: number;
   readonly b: number;
 }
-
 
 export interface ExtensionSettings {
   enabled: boolean;
