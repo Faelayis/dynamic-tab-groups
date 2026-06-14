@@ -16,6 +16,14 @@
   "background": {
     "service_worker": "background.js"
   },
+  "commands": {
+    "move-tab-left": {
+      "description": "Move active tab left"
+    },
+    "move-tab-right": {
+      "description": "Move active tab right"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
