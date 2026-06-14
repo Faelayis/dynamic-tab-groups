@@ -1,3 +1,5 @@
+import { getSettings } from "../shared/storage/index.ts";
+
 export function setupCommands() {
   chrome.commands.onCommand.addListener(async (command) => {
     if (command === "move-tab-right" || command === "move-tab-left") {
@@ -7,6 +9,9 @@ export function setupCommands() {
           currentWindow: true,
         });
         if (!activeTab || activeTab.id === undefined) return;
+
+        const settings = await getSettings();
+        if (settings.ignorePinnedTabs && activeTab.pinned) return;
 
         const windows = await chrome.windows.getAll({ windowTypes: ["normal"] });
         const currentWindowIndex = windows.findIndex((w) => w.id === activeTab.windowId);
