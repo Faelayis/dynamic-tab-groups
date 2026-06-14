@@ -32,7 +32,7 @@ jobs:
            run: bun install
 
          - name: Format Code
-           run: bun run format
+           run: bun run biome:format
 
          - name: Auto Commit Formatting Changes
            uses: stefanzweifel/git-auto-commit-action@v7

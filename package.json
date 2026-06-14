@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "build": "bun run scripts/build.ts",
-    "format": "bun biome format --write .",
-    "check": "bun biome check --write ."
+    "biome:format": "bun biome format --write .",
+    "biome:check": "bun biome check --write ."
   },
   "packageManager": "bun@1.3.4",
   "engines": {
