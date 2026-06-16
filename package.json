@@ -10,6 +10,7 @@
     "zip": "cd dist && bestzip ../dist.zip *",
     "upload": "dotenv -- chrome-webstore-upload upload --source dist.zip --auto-publish",
     "publish": "dotenv -- chrome-webstore-upload publish",
+    "generate:icons": "bun run scripts/generate_icons.ts",
     "biome:format": "bun biome format --write .",
     "biome:check": "bun biome check --write ."
   },
@@ -22,10 +23,12 @@
     "@types/bun": "1.3.14",
     "@types/chrome": "0.1.43",
     "@types/node": "25.9.3",
+    "@types/sharp": "0.32.0",
     "bestzip": "3.0.1",
     "bumpp": "11.1.0",
     "chrome-webstore-upload-cli": "4.0.1",
     "dotenv-cli": "11.0.0",
+    "sharp": "0.35.1",
     "typescript": "5"
   }
 }

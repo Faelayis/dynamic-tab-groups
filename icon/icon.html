@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Tab Groups - Icon Generator</title>
+  <style>
+    body { 
+      background: #202124; 
+      color: #e8eaed; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      padding: 40px; 
+      text-align: center;
+    }
+    canvas { 
+      background: transparent; 
+      background-image: 
+        linear-gradient(45deg, #3c4043 25%, transparent 25%), 
+        linear-gradient(-45deg, #3c4043 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #3c4043 75%), 
+        linear-gradient(-45deg, transparent 75%, #3c4043 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      border: 1px solid #5f6368; 
+      margin: 10px; 
+      border-radius: 4px;
+    }
+    .container { 
+      display: flex; 
+      align-items: flex-end; 
+      justify-content: center;
+      gap: 30px; 
+      margin-top: 40px;
+    }
+    .item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    button {
+      background: #8ab4f8;
+      color: #202124;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #aecbfa; }
+  </style>
+</head>
+<body>
+  <div class="container" id="canvases"></div>
+
+  <script>
+    const sizes = [16, 32, 48, 128];
+
+    function drawIcon(ctx, size) {
+      const padding = size / 8;
+      const contentSize = size * (3/4);
+      
+      ctx.clearRect(0, 0, size, size);
+      ctx.save();
+      ctx.translate(padding, padding);
+      
+      const r = contentSize * 0.12; 
+      
+      ctx.fillStyle = '#4285f4';
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowOffsetY = size * 0.02;
+      ctx.shadowBlur = size * 0.04;
+      ctx.beginPath();
+      ctx.roundRect(contentSize * 0.15, contentSize * 0.05, contentSize * 0.7, contentSize * 0.85, r);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.shadowColor = 'transparent';
+      ctx.beginPath();
+      ctx.roundRect(contentSize * 0.15, contentSize * 0.05, contentSize * 0.7, contentSize * 0.25, r);
+      ctx.fill();
+      ctx.fillStyle = '#34a853';
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowOffsetY = size * 0.02;
+      ctx.shadowBlur = size * 0.04;
+      ctx.beginPath();
+      ctx.roundRect(contentSize * 0.05, contentSize * 0.25, contentSize * 0.9, contentSize * 0.65, r);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.shadowColor = 'transparent';
+      ctx.beginPath();
+      ctx.roundRect(contentSize * 0.05, contentSize * 0.25, contentSize * 0.9, contentSize * 0.25, r);
+      ctx.fill();
+      ctx.fillStyle = '#fbbc04';
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowOffsetY = size * 0.02;
+      ctx.shadowBlur = size * 0.04;
+      ctx.beginPath();
+      ctx.roundRect(0, contentSize * 0.45, contentSize, contentSize * 0.45, r);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.shadowColor = 'transparent';
+      ctx.beginPath();
+      ctx.roundRect(0, contentSize * 0.45, contentSize, contentSize * 0.25, r);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(contentSize * 0.15, contentSize * 0.575, contentSize * 0.05, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.roundRect(contentSize * 0.25, contentSize * 0.535, contentSize * 0.4, contentSize * 0.08, contentSize * 0.04);
+      ctx.fill();
+      ctx.restore();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.shadowColor = 'rgba(255,255,255,0.8)';
+      ctx.shadowBlur = size * 0.06;
+      ctx.drawImage(ctx.canvas, 0, 0);
+    }
+
+    const container = document.getElementById('canvases');
+    
+    sizes.forEach(size => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'item';
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      drawIcon(ctx, size);
+      
+      const btn = document.createElement('button');
+      btn.innerText = `Download ${size}x${size}`;
+      btn.onclick = () => {
+        const link = document.createElement('a');
+        link.download = `icon_${size}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      };
+      
+      wrapper.appendChild(canvas);
+      wrapper.appendChild(btn);
+      container.appendChild(wrapper);
+    });
+  </script>
+</body>
+</html>
