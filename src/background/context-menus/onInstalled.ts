@@ -37,29 +37,38 @@ export async function onInstalled() {
   });
 
   chrome.contextMenus.create({
-    id: "toggle-moveActiveTabToRight",
+    id: "toggle-sortOnActiveTab",
     parentId: "sort-menu",
-    title: "Move Active Tab to Right",
+    title: "Mode Active Tab or Exit Tab",
     type: "checkbox",
-    checked: settings.moveActiveTabToRight,
+    checked: settings.sortOnActiveTab,
     contexts: ["action"],
   });
 
   chrome.contextMenus.create({
-    id: "toggle-moveActiveTabToRightBeforeNewTab",
+    id: "toggle-moveRecentlyTabToRight",
     parentId: "sort-menu",
-    title: "Active Tab to Right (Before New Tab)",
+    title: "Move Recently Tab to Right",
     type: "checkbox",
-    checked: settings.moveActiveTabToRightBeforeNewTab,
+    checked: settings.moveRecentlyTabToRight,
     contexts: ["action"],
   });
 
   chrome.contextMenus.create({
-    id: "toggle-moveActiveTabToRightWithinGroup",
+    id: "toggle-moveRecentlyTabToRightBeforeNewTab",
     parentId: "sort-menu",
-    title: "Move Active Tab to Right (In Group)",
+    title: "Recently Tab to Right (Before New Tab)",
     type: "checkbox",
-    checked: settings.moveActiveTabToRightGroup,
+    checked: settings.moveRecentlyTabToRightBeforeNewTab,
+    contexts: ["action"],
+  });
+
+  chrome.contextMenus.create({
+    id: "toggle-moveRecentlyTabToRightGroup",
+    parentId: "sort-menu",
+    title: "Move Recently Tab to Right (In Group)",
+    type: "checkbox",
+    checked: settings.moveRecentlyTabToRightGroup,
     contexts: ["action"],
   });
 

@@ -16,14 +16,15 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   enabled: true,
   closeSingleTabGroups: true,
   sortGroupsAlphabetically: false,
-  moveActiveTabToRight: true,
-  moveActiveTabToRightGroup: true,
-  moveActiveTabToRightBeforeNewTab: false,
+  sortOnActiveTab: true,
+  moveRecentlyTabToRight: true,
+  moveRecentlyTabToRightGroup: true,
+  moveRecentlyTabToRightBeforeNewTab: false,
   ignorePinnedTabs: true,
   groupChromePages: false,
   collapseGroupsWhenNotInUse: false,
   useUuidTracker: false,
-  renameGroupToSiteName: false,
+  renameGroupToSiteName: true,
 } as const;
 
 export const IGNORED_PROTOCOLS = new Set([
