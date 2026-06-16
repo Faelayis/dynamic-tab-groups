@@ -37,6 +37,11 @@ async function build(): Promise<void> {
   cpSync(join(SRC_DIR, "manifest.json"), join(OUT_DIR, "manifest.json"));
   console.log("  ✅ manifest.json");
 
+  if (existsSync(join(SRC_DIR, "icons"))) {
+    cpSync(join(SRC_DIR, "icons"), join(OUT_DIR, "icons"), { recursive: true });
+    console.log("  ✅ icons/");
+  }
+
   const elapsed = (performance.now() - start).toFixed(0);
   console.log(`\n🎉 Build complete in ${elapsed}ms → dist/`);
   console.log("   Load this folder as an unpacked extension in chrome://extensions");

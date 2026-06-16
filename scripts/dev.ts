@@ -34,6 +34,9 @@ async function build() {
       for (const log of result.logs) console.error("  ", log);
     } else {
       cpSync(join(SRC_DIR, "manifest.json"), join(OUT_DIR, "manifest.json"));
+      if (existsSync(join(SRC_DIR, "icons"))) {
+        cpSync(join(SRC_DIR, "icons"), join(OUT_DIR, "icons"), { recursive: true });
+      }
       const elapsed = (performance.now() - start).toFixed(0);
       console.log(
         `[${new Date().toLocaleTimeString()}] ✅ Build complete in ${elapsed}ms`,
