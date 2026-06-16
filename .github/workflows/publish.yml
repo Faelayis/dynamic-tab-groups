@@ -1,0 +1,73 @@
+name: Publish to Chrome Web Store
+
+on:
+   push:
+      tags:
+         - "v*"
+   workflow_dispatch:
+      inputs:
+         version_type:
+            description: "Version bump type"
+            required: true
+            default: "patch"
+            type: choice
+            options:
+               - none
+               - patch
+               - minor
+               - major
+
+jobs:
+   publish:
+      runs-on: ubuntu-latest
+      permissions:
+         contents: write
+
+      steps:
+         - name: Checkout Repository
+           uses: actions/checkout@v4
+
+         - name: Setup Bun
+           uses: oven-sh/setup-bun@v2
+           with:
+              bun-version-file: package.json
+
+         - name: Bump and Sync Version
+           id: package-version
+           if: github.event_name == 'workflow_dispatch' && github.event.inputs.version_type != 'none'
+           run: bun run scripts/publish.ts ${{ github.event.inputs.version_type }}
+
+         - name: Cache bun install
+           uses: actions/cache@v4
+           with:
+              path: ~/.bun/install/cache
+              key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+              restore-keys: |
+                 ${{ runner.os }}-bun-
+
+         - name: Install Dependencies
+           run: bun install
+
+         - name: Build Extension
+           run: bun run build
+
+         - name: Create Zip Archive
+           run: bun run zip
+
+         - name: Upload and Publish to Chrome Web Store
+           env:
+              EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+              CLIENT_ID: ${{ secrets.CLIENT_ID }}
+              CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+              REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+           run: bun run upload
+
+         - name: Automatically Commit Changes
+           if: github.event_name == 'workflow_dispatch' && github.event.inputs.version_type != 'none'
+           uses: stefanzweifel/git-auto-commit-action@v5
+           with:
+              tagging_message: "v${{ steps.package-version.outputs.version }}"
+              push_options: "--force"
+              commit_options: "--no-verify"
+              commit_message: "Release v${{ steps.package-version.outputs.version }}"
+              skip_checkout: true
