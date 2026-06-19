@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   enabled: true,
   closeSingleTabGroups: true,
   sortGroupsAlphabetically: false,
+  moveRecentlySplitViewToRight: true,
   sortOnActiveTab: true,
   moveRecentlyTabToRight: true,
   moveRecentlyTabToRightGroup: true,

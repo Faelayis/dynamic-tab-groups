@@ -5,7 +5,6 @@ import { createOrUpdateGroup } from "../group-manager/createOrUpdateGroup.ts";
 import { findGroupByTitle } from "../group-manager/findGroupByTitle.ts";
 import { isTabGrouped } from "../group-manager/isTabGrouped.ts";
 import { ungroupTabs } from "../group-manager/ungroupTabs.ts";
-import { isInSplitView } from "./splitView.ts";
 
 export async function groupDomainTabs(
   windowId: number,
@@ -73,14 +72,12 @@ export async function resolveColor(
 export async function enforceGroupSortOrder(
   windowId: number,
   tabs: chrome.tabs.Tab[],
-  settings: { respectSplitView: boolean },
+  _settings: { respectSplitView: boolean },
 ): Promise<void> {
   try {
     let groups = await chrome.tabGroups.query({ windowId });
     groups = groups.filter((g) => g.windowId === windowId);
     if (groups.length <= 1) return;
-
-    if (settings.respectSplitView && tabs.some(isInSplitView)) return;
 
     const currentOrder: number[] = [];
     let minGroupIndex = Infinity;

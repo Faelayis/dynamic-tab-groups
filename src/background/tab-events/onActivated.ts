@@ -1,6 +1,11 @@
 import { getSettings } from "../../shared/storage/index.ts";
+import type { ExtensionSettings } from "../../types/index.ts";
 import { isChromeStartup } from "../startup/isChromeStartup.ts";
-import { isInSplitView } from "../tab-manager/splitView.ts";
+import {
+  getSplitViewBlockForTab,
+  getSplitViewBlocks,
+  isInSplitView,
+} from "../tab-manager/splitView.ts";
 
 const previousActiveTabIds: Record<number, number> = {};
 
@@ -25,11 +30,14 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
           const tabToSort = await chrome.tabs.get(tabToSortId);
           const tabToSortGroupId = tabToSort.groupId;
 
-          if (
-            !(settings.ignorePinnedTabs && tabToSort.pinned) &&
-            !(settings.respectSplitView && isInSplitView(tabToSort))
-          ) {
-            if (
+          if (!(settings.ignorePinnedTabs && tabToSort.pinned)) {
+            if (settings.respectSplitView && isInSplitView(tabToSort)) {
+              if (settings.moveRecentlySplitViewToRight) {
+                if (!(await isChromeStartup())) {
+                  await moveSplitViewBlockToRight(tabToSort, settings);
+                }
+              }
+            } else if (
               tabToSortGroupId !== undefined &&
               tabToSortGroupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
             ) {
@@ -42,13 +50,11 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
                     ? groupTabs.filter((t) => !isInSplitView(t))
                     : groupTabs;
                   if (groupTabsFiltered.length > 1) {
-                    const maxIndex = Math.max(
-                      ...groupTabsFiltered.map((t) => t.index),
-                    );
+                    const maxIndex = Math.max(...groupTabsFiltered.map((t) => t.index));
                     if (tabToSort.index < maxIndex && tabToSort.id !== undefined) {
                       await chrome.tabs.move(tabToSort.id, {
-                        windowId: tabToSort.windowId,
                         index: maxIndex,
+                        windowId: tabToSort.windowId,
                       });
                     }
                   }
@@ -60,45 +66,7 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
                 settings.moveRecentlyTabToRightBeforeNewTab
               ) {
                 if (!(await isChromeStartup())) {
-                  const allTabs = await chrome.tabs.query({
-                    windowId: tabToSort.windowId,
-                  });
-                  const ungroupedTabs = allTabs.filter(
-                    (t) =>
-                      t.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE &&
-                      !(settings.ignorePinnedTabs && t.pinned) &&
-                      !(settings.respectSplitView && isInSplitView(t)),
-                  );
-                  if (ungroupedTabs.length > 1) {
-                    let targetIndex = Math.max(...ungroupedTabs.map((t) => t.index));
-
-                    if (settings.moveRecentlyTabToRightBeforeNewTab) {
-                      const sortedUngrouped = [...ungroupedTabs].sort(
-                        (a, b) => a.index - b.index,
-                      );
-                      while (sortedUngrouped.length > 0) {
-                        const lastTab = sortedUngrouped[sortedUngrouped.length - 1];
-                        if (!lastTab) break;
-                        const url = lastTab.pendingUrl || lastTab.url || "";
-                        const isNewTab =
-                          url === "chrome://newtab/" || url === "edge://newtab/";
-
-                        if (isNewTab && lastTab.id !== tabToSort.id) {
-                          sortedUngrouped.pop();
-                          targetIndex = lastTab.index - 1;
-                        } else {
-                          break;
-                        }
-                      }
-                    }
-
-                    if (tabToSort.index < targetIndex && tabToSort.id !== undefined) {
-                      await chrome.tabs.move(tabToSort.id, {
-                        windowId: tabToSort.windowId,
-                        index: targetIndex,
-                      });
-                    }
-                  }
+                  await moveUngroupedTabToRight(tabToSort, settings);
                 }
               }
             }
@@ -122,4 +90,109 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
       //
     }
   }, 250);
+}
+
+async function moveSplitViewBlockToRight(
+  tabToSort: chrome.tabs.Tab,
+  settings: ExtensionSettings,
+): Promise<void> {
+  if (tabToSort.id === undefined || tabToSort.windowId === undefined) return;
+
+  const allTabs = await chrome.tabs.query({ windowId: tabToSort.windowId });
+  const block = getSplitViewBlockForTab(allTabs, tabToSort.id);
+  if (!block || block.length === 0) return;
+
+  const blockMinIndex = block[0]!.index;
+
+  let tabsToMove = allTabs.filter(
+    (t) =>
+      t.id !== undefined &&
+      t.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE &&
+      !(settings.ignorePinnedTabs && t.pinned) &&
+      !isInSplitView(t) &&
+      t.index > blockMinIndex,
+  );
+
+  if (tabsToMove.length === 0) return;
+
+  tabsToMove = [...tabsToMove].sort((a, b) => a.index - b.index);
+
+  if (settings.moveRecentlyTabToRightBeforeNewTab) {
+    while (tabsToMove.length > 0) {
+      const lastTab = tabsToMove[tabsToMove.length - 1];
+      if (!lastTab) break;
+      const url = lastTab.pendingUrl || lastTab.url || "";
+      const isNewTab = url === "chrome://newtab/" || url === "edge://newtab/";
+      if (isNewTab) {
+        tabsToMove = tabsToMove.slice(0, -1);
+      } else {
+        break;
+      }
+    }
+  }
+
+  if (tabsToMove.length === 0) return;
+
+  const tabIds = tabsToMove
+    .map((t) => t.id)
+    .filter((id): id is number => id !== undefined);
+
+  try {
+    await chrome.tabs.move(tabIds, {
+      index: blockMinIndex,
+      windowId: tabToSort.windowId,
+    });
+  } catch (error) {
+    console.warn("[Dynamic Tab Groups] Failed to move split view block:", error);
+  }
+}
+
+async function moveUngroupedTabToRight(
+  tabToSort: chrome.tabs.Tab,
+  settings: ExtensionSettings,
+): Promise<void> {
+  if (tabToSort.id === undefined || tabToSort.windowId === undefined) return;
+
+  const allTabs = await chrome.tabs.query({ windowId: tabToSort.windowId });
+
+  const ungroupedTabs = allTabs.filter(
+    (t) =>
+      t.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE &&
+      !(settings.ignorePinnedTabs && t.pinned) &&
+      !(settings.respectSplitView && isInSplitView(t)),
+  );
+
+  const splitViewBlocks = settings.respectSplitView ? getSplitViewBlocks(allTabs) : [];
+
+  if (ungroupedTabs.length <= 1 && splitViewBlocks.length === 0) return;
+
+  const candidateIndexes: number[] = [];
+  for (const t of ungroupedTabs) candidateIndexes.push(t.index);
+  for (const b of splitViewBlocks) candidateIndexes.push(b[b.length - 1]!.index + 1);
+
+  let targetIndex =
+    candidateIndexes.length > 0 ? Math.max(...candidateIndexes) : tabToSort.index;
+
+  if (settings.moveRecentlyTabToRightBeforeNewTab) {
+    const sortedUngrouped = [...ungroupedTabs].sort((a, b) => a.index - b.index);
+    while (sortedUngrouped.length > 0) {
+      const lastTab = sortedUngrouped[sortedUngrouped.length - 1];
+      if (!lastTab) break;
+      const url = lastTab.pendingUrl || lastTab.url || "";
+      const isNewTab = url === "chrome://newtab/" || url === "edge://newtab/";
+      if (isNewTab && lastTab.id !== tabToSort.id) {
+        sortedUngrouped.pop();
+        targetIndex = Math.min(targetIndex, lastTab.index - 1);
+      } else {
+        break;
+      }
+    }
+  }
+
+  if (tabToSort.index < targetIndex && tabToSort.id !== undefined) {
+    await chrome.tabs.move(tabToSort.id, {
+      index: targetIndex,
+      windowId: tabToSort.windowId,
+    });
+  }
 }

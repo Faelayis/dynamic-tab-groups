@@ -23,6 +23,7 @@ export interface ExtensionSettings {
   moveRecentlyTabToRight: boolean;
   moveRecentlyTabToRightGroup: boolean;
   moveRecentlyTabToRightBeforeNewTab: boolean;
+  moveRecentlySplitViewToRight: boolean;
   ignorePinnedTabs: boolean;
   groupChromePages: boolean;
   collapseGroupsWhenNotInUse: boolean;
