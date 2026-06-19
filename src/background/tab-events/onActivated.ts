@@ -1,5 +1,6 @@
 import { getSettings } from "../../shared/storage/index.ts";
 import { isChromeStartup } from "../startup/isChromeStartup.ts";
+import { isInSplitView } from "../tab-manager/splitView.ts";
 
 const previousActiveTabIds: Record<number, number> = {};
 
@@ -24,7 +25,10 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
           const tabToSort = await chrome.tabs.get(tabToSortId);
           const tabToSortGroupId = tabToSort.groupId;
 
-          if (!(settings.ignorePinnedTabs && tabToSort.pinned)) {
+          if (
+            !(settings.ignorePinnedTabs && tabToSort.pinned) &&
+            !(settings.respectSplitView && isInSplitView(tabToSort))
+          ) {
             if (
               tabToSortGroupId !== undefined &&
               tabToSortGroupId !== chrome.tabGroups.TAB_GROUP_ID_NONE
@@ -34,8 +38,13 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
                   const groupTabs = await chrome.tabs.query({
                     groupId: tabToSortGroupId,
                   });
-                  if (groupTabs.length > 1) {
-                    const maxIndex = Math.max(...groupTabs.map((t) => t.index));
+                  const groupTabsFiltered = settings.respectSplitView
+                    ? groupTabs.filter((t) => !isInSplitView(t))
+                    : groupTabs;
+                  if (groupTabsFiltered.length > 1) {
+                    const maxIndex = Math.max(
+                      ...groupTabsFiltered.map((t) => t.index),
+                    );
                     if (tabToSort.index < maxIndex && tabToSort.id !== undefined) {
                       await chrome.tabs.move(tabToSort.id, {
                         windowId: tabToSort.windowId,
@@ -57,7 +66,8 @@ export async function onActivated(activeInfo: { tabId: number; windowId: number 
                   const ungroupedTabs = allTabs.filter(
                     (t) =>
                       t.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE &&
-                      !(settings.ignorePinnedTabs && t.pinned),
+                      !(settings.ignorePinnedTabs && t.pinned) &&
+                      !(settings.respectSplitView && isInSplitView(t)),
                   );
                   if (ungroupedTabs.length > 1) {
                     let targetIndex = Math.max(...ungroupedTabs.map((t) => t.index));

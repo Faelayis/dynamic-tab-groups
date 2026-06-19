@@ -28,4 +28,5 @@ export interface ExtensionSettings {
   collapseGroupsWhenNotInUse: boolean;
   useUuidTracker: boolean;
   renameGroupToSiteName: boolean;
+  respectSplitView: boolean;
 }

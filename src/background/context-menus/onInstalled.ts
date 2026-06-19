@@ -106,6 +106,15 @@ export async function onInstalled() {
   });
 
   chrome.contextMenus.create({
+    id: "toggle-respectSplitView",
+    parentId: "advanced-menu",
+    title: "Respect Split View (Don't Touch Split Tabs)",
+    type: "checkbox",
+    checked: settings.respectSplitView,
+    contexts: ["action"],
+  });
+
+  chrome.contextMenus.create({
     id: "uuid-menu",
     title: "UUID Tracker",
     contexts: ["action"],

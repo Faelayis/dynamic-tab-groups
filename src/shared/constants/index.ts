@@ -25,6 +25,7 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   collapseGroupsWhenNotInUse: false,
   useUuidTracker: false,
   renameGroupToSiteName: true,
+  respectSplitView: true,
 } as const;
 
 export const IGNORED_PROTOCOLS = new Set([

@@ -6,6 +6,7 @@ import {
   groupDomainTabs,
   maybeUngroupSingleTab,
 } from "./grouping.ts";
+import { isInSplitView } from "./splitView.ts";
 
 const pendingEvaluations = new Map<number, ReturnType<typeof setTimeout>>();
 
@@ -40,7 +41,7 @@ export async function evaluateWindow(windowId: number): Promise<void> {
   if (!settings.enabled) return;
 
   const displayId = await getDisplayIdForWindow(windowId);
-  console.log("Window is on display:", displayId);
+  console.log("[Dynamic Tab Groups] Window is on display:", displayId);
 
   if (!displayId) {
     console.log(
@@ -55,6 +56,7 @@ export async function evaluateWindow(windowId: number): Promise<void> {
   for (const tab of tabs) {
     if (tab.id === undefined || !tab.url) continue;
     if (settings.ignorePinnedTabs && tab.pinned) continue;
+    if (settings.respectSplitView && isInSplitView(tab)) continue;
 
     const domain = extractDomain(tab.url, settings.groupChromePages);
     if (!domain) continue;
@@ -77,7 +79,7 @@ export async function evaluateWindow(windowId: number): Promise<void> {
   }
 
   if (settings.sortGroupsAlphabetically) {
-    await enforceGroupSortOrder(windowId, tabs);
+    await enforceGroupSortOrder(windowId, tabs, settings);
   }
 
   try {

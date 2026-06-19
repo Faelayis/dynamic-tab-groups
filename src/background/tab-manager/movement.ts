@@ -1,15 +1,17 @@
 import { getSettings } from "../../shared/storage/index.ts";
 import { getDisplayIdForWindow } from "./display.ts";
+import { isInSplitView } from "./splitView.ts";
 
 export async function moveNewTabToRight(tab: chrome.tabs.Tab): Promise<void> {
   const settings = await getSettings();
   if (!settings.enabled) return;
   if (tab.id === undefined || tab.windowId === undefined) return;
   if (settings.ignorePinnedTabs && tab.pinned) return;
+  if (settings.respectSplitView && isInSplitView(tab)) return;
 
   try {
     const displayId = await getDisplayIdForWindow(tab.windowId);
-    console.log("Window is on display:", displayId);
+    console.log("[Dynamic Tab Groups] Window is on display:", displayId);
     if (!displayId) return;
   } catch {
     //
