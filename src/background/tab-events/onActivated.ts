@@ -1,3 +1,4 @@
+import { isNewTabPage } from "../../shared/newtab.ts";
 import { getSettings } from "../../shared/storage/index.ts";
 import type { ExtensionSettings } from "../../types/index.ts";
 import { isChromeStartup } from "../startup/isChromeStartup.ts";
@@ -121,9 +122,7 @@ async function moveSplitViewBlockToRight(
     while (tabsToMove.length > 0) {
       const lastTab = tabsToMove[tabsToMove.length - 1];
       if (!lastTab) break;
-      const url = lastTab.pendingUrl || lastTab.url || "";
-      const isNewTab = url === "chrome://newtab/" || url === "edge://newtab/";
-      if (isNewTab) {
+      if (isNewTabPage(lastTab)) {
         tabsToMove = tabsToMove.slice(0, -1);
       } else {
         break;
@@ -173,14 +172,30 @@ async function moveUngroupedTabToRight(
   let targetIndex =
     candidateIndexes.length > 0 ? Math.max(...candidateIndexes) : tabToSort.index;
 
+  console.log("[Dynamic Tab Groups] [BeforeNewTab][diag] settings:", {
+    moveRecentlyTabToRight: settings.moveRecentlyTabToRight,
+    moveRecentlyTabToRightBeforeNewTab: settings.moveRecentlyTabToRightBeforeNewTab,
+  });
+  console.log("[Dynamic Tab Groups] [BeforeNewTab][diag] tabToSort:", {
+    id: tabToSort.id,
+    index: tabToSort.index,
+  });
+  console.log(
+    "[Dynamic Tab Groups] [BeforeNewTab][diag] ungrouped tabs:",
+    ungroupedTabs.map((t) => ({
+      index: t.index,
+      url: t.url,
+      pendingUrl: t.pendingUrl,
+      isNewTab: isNewTabPage(t),
+    })),
+  );
+
   if (settings.moveRecentlyTabToRightBeforeNewTab) {
     const sortedUngrouped = [...ungroupedTabs].sort((a, b) => a.index - b.index);
     while (sortedUngrouped.length > 0) {
       const lastTab = sortedUngrouped[sortedUngrouped.length - 1];
       if (!lastTab) break;
-      const url = lastTab.pendingUrl || lastTab.url || "";
-      const isNewTab = url === "chrome://newtab/" || url === "edge://newtab/";
-      if (isNewTab && lastTab.id !== tabToSort.id) {
+      if (isNewTabPage(lastTab) && lastTab.id !== tabToSort.id) {
         sortedUngrouped.pop();
         targetIndex = Math.min(targetIndex, lastTab.index - 1);
       } else {
@@ -189,10 +204,28 @@ async function moveUngroupedTabToRight(
     }
   }
 
+  console.log(
+    "[Dynamic Tab Groups] [BeforeNewTab][diag] final targetIndex:",
+    targetIndex,
+  );
+
   if (tabToSort.index < targetIndex && tabToSort.id !== undefined) {
     await chrome.tabs.move(tabToSort.id, {
       index: targetIndex,
       windowId: tabToSort.windowId,
     });
+    console.log(
+      "[Dynamic Tab Groups] [BeforeNewTab][diag] moved tab",
+      tabToSort.id,
+      "to index",
+      targetIndex,
+    );
+  } else {
+    console.log(
+      "[Dynamic Tab Groups] [BeforeNewTab][diag] no move — tabToSort.index",
+      tabToSort.index,
+      "not < targetIndex",
+      targetIndex,
+    );
   }
 }

@@ -1,3 +1,4 @@
+import { isNewTabPage } from "../../shared/newtab.ts";
 import { getSettings } from "../../shared/storage/index.ts";
 import { scheduleEvaluation } from "../tab-manager/evaluation.ts";
 import { moveNewTabToRight } from "../tab-manager/movement.ts";
@@ -7,10 +8,8 @@ export async function onCreated(tab: chrome.tabs.Tab) {
 
   if (!settings.useUuidTracker) {
     const isFromLink = tab.openerTabId !== undefined;
-    const isNewTabPage =
-      tab.pendingUrl === "chrome://newtab/" || tab.url === "chrome://newtab/";
 
-    if (isFromLink || isNewTabPage) {
+    if (isFromLink || isNewTabPage(tab)) {
       setTimeout(async () => {
         try {
           const currentTab = await chrome.tabs.get(tab.id!);
