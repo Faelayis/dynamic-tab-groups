@@ -5,6 +5,8 @@ node_modules
 out
 dist
 *.tgz
+*.crx
+*.pem
 
 # code coverage
 coverage

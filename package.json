@@ -7,12 +7,11 @@
   "scripts": {
     "dev": "bun run scripts/dev.ts",
     "build": "bun run scripts/build.ts",
-    "zip": "cd dist && bestzip ../dist.zip *",
-    "upload": "dotenv -- chrome-webstore-upload upload --source dist.zip --auto-publish",
+    "zip": "cd dist && bestzip ../dynamic-tab-groups.zip *",
+    "upload": "dotenv -- chrome-webstore-upload upload --source dynamic-tab-groups.zip --auto-publish",
     "publish": "dotenv -- chrome-webstore-upload publish",
     "generate:icons": "bun run scripts/generate_icons.ts",
-    "biome:format": "bun biome format --write .",
-    "biome:check": "bun biome check --write ."
+    "biome:format": "bun biome format --write ."
   },
   "packageManager": "bun@1.3.14",
   "engines": {

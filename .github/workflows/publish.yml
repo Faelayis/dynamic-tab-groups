@@ -1,73 +1,142 @@
-name: Publish to Chrome Web Store
+name: Publish
 
 on:
-   push:
-      tags:
-         - "v*"
-   workflow_dispatch:
-      inputs:
-         version_type:
-            description: "Version bump type"
-            required: true
-            default: "patch"
-            type: choice
-            options:
-               - none
-               - patch
-               - minor
-               - major
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Version bump type"
+        required: true
+        default: patch
+        type: choice
+        options:
+          - none
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
 
 jobs:
-   publish:
-      runs-on: ubuntu-latest
-      permissions:
-         contents: write
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
-      steps:
-         - name: Checkout Repository
-           uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-         - name: Setup Bun
-           uses: oven-sh/setup-bun@v2
-           with:
-              bun-version-file: package.json
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
 
-         - name: Bump and Sync Version
-           id: package-version
-           if: github.event_name == 'workflow_dispatch' && github.event.inputs.version_type != 'none'
-           run: bun run scripts/publish.ts ${{ github.event.inputs.version_type }}
+      - name: Cache Bun Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
-         - name: Cache bun install
-           uses: actions/cache@v4
-           with:
-              path: ~/.bun/install/cache
-              key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
-              restore-keys: |
-                 ${{ runner.os }}-bun-
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
 
-         - name: Install Dependencies
-           run: bun install
+      - name: Bump Versions
+        id: bump
+        if: inputs.version_type != 'none'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          version="$(bun run scripts/bump-version.ts '${{ inputs.version_type }}')"
+          {
+            printf 'version=%s\n' "$version"
+            printf 'tag=v%s\n' "$version"
+          } >> "$GITHUB_OUTPUT"
 
-         - name: Build Extension
-           run: bun run build
+      - name: Generate Changelog
+        if: inputs.version_type != 'none'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bunx conventional-changelog \
+            -p conventionalcommits \
+            --tag-prefix "v" \
+            -i CHANGELOG.md \
+            -s
+          bunx conventional-changelog \
+            -p conventionalcommits \
+            --tag-prefix "v" \
+            -r 1 \
+            -o release_notes.md
 
-         - name: Create Zip Archive
-           run: bun run zip
+      - name: Build Extension
+        run: bun run build
 
-         - name: Upload and Publish to Chrome Web Store
-           env:
-              EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
-              CLIENT_ID: ${{ secrets.CLIENT_ID }}
-              CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-              REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
-           run: bun run upload
+      - name: Create Zip Archive
+        run: bun run zip
 
-         - name: Automatically Commit Changes
-           if: github.event_name == 'workflow_dispatch' && github.event.inputs.version_type != 'none'
-           uses: stefanzweifel/git-auto-commit-action@v5
-           with:
-              tagging_message: "v${{ steps.package-version.outputs.version }}"
-              push_options: "--force"
-              commit_options: "--no-verify"
-              commit_message: "Release v${{ steps.package-version.outputs.version }}"
-              skip_checkout: true
+      - name: Create CRX Archive
+        if: inputs.version_type != 'none'
+        shell: bash
+        env:
+          CRX_PRIVATE_KEY_BASE64: ${{ secrets.CRX_PRIVATE_KEY_BASE64 }}
+        run: |
+          set -Eeuo pipefail
+          : "${CRX_PRIVATE_KEY_BASE64:?CRX_PRIVATE_KEY_BASE64 secret is required}"
+
+          key_path="$(mktemp "$RUNNER_TEMP/dynamic-tab-groups.XXXXXX.pem")"
+          cleanup() {
+            rm -f -- "$key_path"
+          }
+          trap cleanup EXIT
+
+          printf '%s' "$CRX_PRIVATE_KEY_BASE64" | base64 --decode > "$key_path"
+          chmod 600 "$key_path"
+          [[ -s "$key_path" ]] || {
+            printf 'Decoded CRX private key is empty\n' >&2
+            exit 1
+          }
+
+          bunx crx3 \
+            -p "$key_path" \
+            -o dynamic-tab-groups.crx \
+            -- dist
+          [[ -s dynamic-tab-groups.crx ]] || {
+            printf 'CRX archive was not created\n' >&2
+            exit 1
+          }
+
+      - name: Upload and Publish to Chrome Web Store
+        env:
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        run: bun run upload
+
+      - name: Commit Version Bump
+        if: inputs.version_type != 'none'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(release): ${{ steps.bump.outputs.tag }}"
+          file_pattern: package.json src/manifest.json CHANGELOG.md
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          tagging_message: ${{ steps.bump.outputs.tag }}
+
+      - name: Create GitHub Release
+        if: inputs.version_type != 'none'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.bump.outputs.tag }}
+          name: ${{ steps.bump.outputs.tag }}
+          body_path: release_notes.md
+          fail_on_unmatched_files: true
+          files: |
+            dynamic-tab-groups.zip
+            dynamic-tab-groups.crx
