@@ -82,6 +82,27 @@ jobs:
       - name: Build Extension
         run: bun run build
 
+      - name: Inject Extension Public Key
+        shell: bash
+        env:
+          PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+        run: |
+          set -Eeuo pipefail
+          : "${PUBLIC_KEY:?PUBLIC_KEY secret is required}"
+
+          bun -e '
+            const path = "dist/manifest.json";
+            const publicKey = process.env.PUBLIC_KEY
+              ?.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\s/g, "");
+            if (!publicKey || !/^[A-Za-z0-9+/]+={0,2}$/.test(publicKey)) {
+              throw new Error("PUBLIC_KEY is not a valid PEM or Base64 public key");
+            }
+
+            const manifest = await Bun.file(path).json();
+            manifest.key = publicKey;
+            await Bun.write(path, `${JSON.stringify(manifest, null, 2)}\n`);
+          '
+
       - name: Create Zip Archive
         run: bun run zip
 
