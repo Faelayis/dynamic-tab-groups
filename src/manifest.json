@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Dynamic Tab Groups",
   "description": "Automatically group tabs by domain with favicon-based group colors. Ungroups when only one tab remains.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "minimum_chrome_version": "120",
   "icons": {
     "16": "icons/icon_16.png",
