@@ -1,6 +1,6 @@
 {
   "name": "dynamic-tab-groups",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Chrome extension that auto-groups tabs by domain with favicon-based colors",
   "type": "module",
   "private": true,
@@ -8,7 +8,7 @@
     "dev": "bun run scripts/dev.ts",
     "build": "bun run scripts/build.ts",
     "zip": "cd dist && bestzip ../dynamic-tab-groups.zip *",
-    "upload": "dotenv -- chrome-webstore-upload upload --source dynamic-tab-groups.zip --auto-publish",
+    "upload": "dotenv -- chrome-webstore-upload --source dynamic-tab-groups.zip",
     "publish": "dotenv -- chrome-webstore-upload publish",
     "generate:icons": "bun run scripts/generate_icons.ts",
     "biome:format": "bun biome format --write ."
