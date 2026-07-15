@@ -92,7 +92,7 @@ jobs:
 
           bun -e '
             const path = "dist/manifest.json";
-            const publicKey = process.env.PUBLIC_KEY
+            const publicKey = Bun.env.PUBLIC_KEY
               ?.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\s/g, "");
             if (!publicKey || !/^[A-Za-z0-9+/]+={0,2}$/.test(publicKey)) {
               throw new Error("PUBLIC_KEY is not a valid PEM or Base64 public key");
@@ -128,7 +128,7 @@ jobs:
             exit 1
           }
 
-          bunx crx3 \
+          bunx --bun crx3 \
             -p "$key_path" \
             -o dynamic-tab-groups.crx \
             -- dist

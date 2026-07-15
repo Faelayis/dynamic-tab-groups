@@ -1,6 +1,5 @@
+import { $ } from "bun";
 import sharp from "sharp";
-import { resolve } from "node:path";
-import { mkdirSync, existsSync } from "node:fs";
 
 const svgContent = `
 <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
@@ -28,25 +27,22 @@ const svgContent = `
 </svg>
 `;
 
-async function generateIcons() {
+async function generateIcons(): Promise<void> {
   const sizes = [16, 32, 48, 128];
-  const outDir = resolve(process.cwd(), "src", "icons");
+  const iconsUrl = new URL("../src/icons/", import.meta.url);
+  const iconsDirectory = Bun.fileURLToPath(iconsUrl);
+  const svg = new TextEncoder().encode(svgContent);
 
-  if (!existsSync(outDir)) {
-    mkdirSync(outDir, { recursive: true });
-  }
+  await $`mkdir -p ${iconsDirectory}`.quiet();
 
   console.log("🎨 Generating Chrome Extension icons...");
 
   for (const size of sizes) {
-    const outFile = resolve(outDir, `icon_${size}.png`);
-    await sharp(Buffer.from(svgContent)).resize(size, size).png().toFile(outFile);
+    const output = await sharp(svg).resize(size, size).png().toBuffer();
+    await Bun.write(new URL(`icon_${size}.png`, iconsUrl), output);
 
     console.log(`✅ Generated ${size}x${size} -> src/icons/icon_${size}.png`);
   }
 }
 
-generateIcons().catch((err) => {
-  console.error("❌ Failed to generate icons:", err);
-  process.exit(1);
-});
+await generateIcons();

@@ -1,61 +1,70 @@
-import { watch } from "node:fs";
-import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
-import { join, resolve } from "node:path";
+import {
+  copyStaticAssets,
+  ENTRYPOINTS,
+  getStaticAssetsFingerprint,
+  OUT_DIR,
+  resetOutput,
+} from "./build-utils.ts";
 
-const ROOT = resolve(import.meta.dir, "..");
-const OUT_DIR = join(ROOT, "dist");
-const SRC_DIR = join(ROOT, "src");
+const bunExecutable = Bun.argv[0];
+if (!bunExecutable) throw new Error("Unable to locate the Bun executable");
 
-let isBuilding = false;
+console.log("🔨 Starting dev build...");
 
-async function build() {
-  if (isBuilding) return;
-  isBuilding = true;
-  const start = performance.now();
+await resetOutput();
+await copyStaticAssets();
 
+let staticAssetsFingerprint = await getStaticAssetsFingerprint();
+let isCopyingStaticAssets = false;
+
+async function syncStaticAssets(): Promise<void> {
+  if (isCopyingStaticAssets) return;
+
+  isCopyingStaticAssets = true;
   try {
-    if (!existsSync(OUT_DIR)) {
-      mkdirSync(OUT_DIR, { recursive: true });
-    }
+    const nextFingerprint = await getStaticAssetsFingerprint();
+    if (nextFingerprint === staticAssetsFingerprint) return;
 
-    const result = await Bun.build({
-      entrypoints: [
-        join(SRC_DIR, "background", "background.ts"),
-        join(SRC_DIR, "content", "content.ts"),
-      ],
-      outdir: OUT_DIR,
-      target: "browser",
-      minify: false,
-      naming: "[name].[ext]",
-    });
-
-    if (!result.success) {
-      console.error(`[${new Date().toLocaleTimeString()}] ❌ Build failed:`);
-      for (const log of result.logs) console.error("  ", log);
-    } else {
-      cpSync(join(SRC_DIR, "manifest.json"), join(OUT_DIR, "manifest.json"));
-      if (existsSync(join(SRC_DIR, "icons"))) {
-        cpSync(join(SRC_DIR, "icons"), join(OUT_DIR, "icons"), { recursive: true });
-      }
-      const elapsed = (performance.now() - start).toFixed(0);
-      console.log(
-        `[${new Date().toLocaleTimeString()}] ✅ Build complete in ${elapsed}ms`,
-      );
-    }
+    await copyStaticAssets();
+    staticAssetsFingerprint = nextFingerprint;
+    console.log(`[${new Date().toLocaleTimeString()}] ✅ Static assets updated`);
   } catch (error) {
-    console.error(`[${new Date().toLocaleTimeString()}] ❌ Build error:`, error);
+    console.error(
+      `[${new Date().toLocaleTimeString()}] ❌ Static asset copy failed:`,
+      error,
+    );
   } finally {
-    isBuilding = false;
+    isCopyingStaticAssets = false;
   }
 }
 
-console.log("🔨 Starting dev server...");
-await build();
-
-console.log(`👀 Watching for changes in src/...`);
-
-watch(SRC_DIR, { recursive: true }, async (event, filename) => {
-  if (filename) {
-    await build();
-  }
+const builder = Bun.spawn({
+  cmd: [
+    bunExecutable,
+    "build",
+    ...ENTRYPOINTS,
+    "--outdir",
+    OUT_DIR,
+    "--target",
+    "browser",
+    "--entry-naming",
+    "[name].[ext]",
+    "--watch",
+  ],
+  stdin: "inherit",
+  stdout: "inherit",
+  stderr: "inherit",
 });
+
+const staticAssetsTimer = setInterval(() => {
+  void syncStaticAssets();
+}, 500);
+
+console.log("👀 Watching TypeScript and static assets in src/...");
+
+try {
+  const exitCode = await builder.exited;
+  if (exitCode !== 0) throw new Error(`Bun build watcher exited with code ${exitCode}`);
+} finally {
+  clearInterval(staticAssetsTimer);
+}
