@@ -1,0 +1,41 @@
+name: Update Changelog
+
+on:
+   workflow_dispatch:
+
+concurrency:
+   group: update-changelog
+   cancel-in-progress: false
+
+jobs:
+   changelog:
+      runs-on: ubuntu-latest
+      permissions:
+         contents: write
+
+      steps:
+         - name: Checkout Repository
+           uses: actions/checkout@v4
+           with:
+              fetch-depth: 0
+
+         - name: Setup Bun
+           uses: oven-sh/setup-bun@v2
+           with:
+              bun-version-file: package.json
+
+         - name: Install Dependencies
+           run: bun install --frozen-lockfile
+
+         - name: Update Changelog
+           env:
+              GITHUB_TOKEN: ${{ github.token }}
+           run: bun run changelog
+
+         - name: Commit Changelog
+           uses: stefanzweifel/git-auto-commit-action@v7
+           with:
+              commit_message: "docs(changelog): update CHANGELOG.md"
+              file_pattern: CHANGELOG.md
+              commit_user_name: "github-actions[bot]"
+              commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
