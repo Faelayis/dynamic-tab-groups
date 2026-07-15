@@ -1,3 +1,20 @@
+## [0.1.1](https://github.com/Faelayis/dynamic-tab-groups/compare/v0.1.0...v0.1.1) (2026-07-15)
+
+### Features
+
+* **changelog:** add GitHub author attribution ([2a19f98](https://github.com/Faelayis/dynamic-tab-groups/commit/2a19f98a81201b441e03bb7441fce66fadb87175)) by [@Faelayis](https://github.com/Faelayis)
+
+### Styles
+
+* format code ([0b31322](https://github.com/Faelayis/dynamic-tab-groups/commit/0b3132201c72102b1ec7c441cd557f62f8a04f41)) by [@Faelayis](https://github.com/Faelayis)
+
+### Code Refactoring
+
+* **tooling:** migrate scripts to Bun APIs ([f29494b](https://github.com/Faelayis/dynamic-tab-groups/commit/f29494bb16f17836d5652062ffa57efc62bb573d)) by [@Faelayis](https://github.com/Faelayis)
+
+### Build System
+
+* **tooling:** upgrade to TypeScript 7 ([8bf5db4](https://github.com/Faelayis/dynamic-tab-groups/commit/8bf5db4204ba7b15b5443934749d90c627191be5)) by [@Faelayis](https://github.com/Faelayis)
 ## 0.1.0 (2026-07-14)
 
 ### Features
