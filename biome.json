@@ -5,11 +5,12 @@
     "actions": {
       "source": {
         "organizeImports": "on",
+        "useSortedPackageJson": "on",
         "useSortedKeys": {
           "level": "on",
           "options": {
-            "sortOrder": "natural",
-            "groupByNesting": true
+            "groupByNesting": true,
+            "sortOrder": "natural"
           }
         }
       }
@@ -43,6 +44,18 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["package.json"],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedKeys": "off"
+          }
+        }
+      }
+    }
+  ],
   "vcs": {
     "clientKind": "git",
     "enabled": true,
