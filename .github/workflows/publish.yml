@@ -75,7 +75,7 @@ jobs:
                 --tag-prefix "v" \
                 -i CHANGELOG.md \
                 -s
-              bunx --bun conventional-changelog \
+              GITHUB_RELEASE_NOTES=1 bunx --bun conventional-changelog \
                 --config conventional-changelog.config.ts \
                 --tag-prefix "v" \
                 -r 1 \

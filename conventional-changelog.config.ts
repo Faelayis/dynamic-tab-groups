@@ -81,6 +81,11 @@ preset.writer.transform = (commit, context) => {
     author: commit.hash ? authors.get(commit.hash) : undefined,
   };
 };
-preset.writer.commitPartial = `${preset.writer.commitPartial.trimEnd()}{{#if author}} by [@{{author}}]({{@root.host}}/{{author}}){{/if}}\n`;
+const authorAttribution =
+  Bun.env.GITHUB_RELEASE_NOTES === "1"
+    ? " by @{{author}}"
+    : " by [@{{author}}]({{@root.host}}/{{author}})";
+
+preset.writer.commitPartial = `${preset.writer.commitPartial.trimEnd()}{{#if author}}${authorAttribution}{{/if}}\n`;
 
 export default preset;
