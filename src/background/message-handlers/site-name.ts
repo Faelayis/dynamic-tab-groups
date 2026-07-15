@@ -1,7 +1,13 @@
+import type { ExtensionSettings } from "../../types/index.ts";
+
+interface SiteNameReport {
+  siteName: string;
+}
+
 export async function handleSiteNameReport(
-  message: any,
+  message: SiteNameReport,
   sender: chrome.runtime.MessageSender,
-  settings: any,
+  settings: ExtensionSettings,
 ) {
   if (!settings.renameGroupToSiteName) return;
 

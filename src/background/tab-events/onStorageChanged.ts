@@ -6,7 +6,7 @@ export function onStorageChanged(
 ) {
   if (areaName !== "local") return;
 
-  const settingsChange = changes["settings"];
+  const settingsChange = changes.settings;
   if (!settingsChange) return;
 
   evaluateAllWindows();

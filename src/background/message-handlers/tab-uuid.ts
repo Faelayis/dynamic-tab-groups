@@ -1,11 +1,16 @@
+import type { ExtensionSettings } from "../../types/index.ts";
 import { getDisplayIdForWindow } from "../tab-manager/display.ts";
 import { moveNewTabToRight } from "../tab-manager/movement.ts";
 import { tabIdToUuid } from "../uuid-tracker/tabIdToUuid.ts";
 
+interface TabUuidReport {
+  uuid: string;
+}
+
 export async function handleTabUuidReport(
-  message: any,
+  message: TabUuidReport,
   sender: chrome.runtime.MessageSender,
-  settings: any,
+  settings: ExtensionSettings,
 ) {
   if (!settings.useUuidTracker) return;
 
