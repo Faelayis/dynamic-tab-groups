@@ -66,15 +66,17 @@ jobs:
       - name: Generate Changelog
         if: inputs.version_type != 'none'
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
-          bunx conventional-changelog \
-            -p conventionalcommits \
+          bunx --bun conventional-changelog \
+            --config conventional-changelog.config.ts \
             --tag-prefix "v" \
             -i CHANGELOG.md \
             -s
-          bunx conventional-changelog \
-            -p conventionalcommits \
+          bunx --bun conventional-changelog \
+            --config conventional-changelog.config.ts \
             --tag-prefix "v" \
             -r 1 \
             -o release_notes.md
