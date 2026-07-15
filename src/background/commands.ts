@@ -31,8 +31,8 @@ export function setupCommands() {
           const targetWindow = windows[targetWindowIndex];
           if (targetWindow && targetWindow.id !== undefined) {
             await chrome.tabs.move(activeTab.id, {
-              windowId: targetWindow.id,
               index: -1,
+              windowId: targetWindow.id,
             });
             await chrome.tabs.update(activeTab.id, { active: true });
             await chrome.windows.update(targetWindow.id, { focused: true });

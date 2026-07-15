@@ -1,6 +1,6 @@
 import createPreset, {
-  DEFAULT_COMMIT_TYPES,
   type ChangelogTransform,
+  DEFAULT_COMMIT_TYPES,
 } from "conventional-changelog-conventionalcommits";
 
 interface GitHubCommit {

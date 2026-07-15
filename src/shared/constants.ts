@@ -1,30 +1,30 @@
 import type { ExtensionSettings, RGB, TabGroupColor } from "./types.ts";
 
 export const CHROME_GROUP_COLORS: Record<TabGroupColor, RGB> = {
-  grey: { r: 154, g: 160, b: 166 },
-  blue: { r: 66, g: 133, b: 244 },
-  red: { r: 234, g: 67, b: 53 },
-  yellow: { r: 251, g: 188, b: 4 },
-  green: { r: 52, g: 168, b: 83 },
-  pink: { r: 233, g: 30, b: 99 },
-  purple: { r: 156, g: 39, b: 176 },
-  cyan: { r: 0, g: 172, b: 193 },
-  orange: { r: 255, g: 112, b: 67 },
+  blue: { b: 244, g: 133, r: 66 },
+  cyan: { b: 193, g: 172, r: 0 },
+  green: { b: 83, g: 168, r: 52 },
+  grey: { b: 166, g: 160, r: 154 },
+  orange: { b: 67, g: 112, r: 255 },
+  pink: { b: 99, g: 30, r: 233 },
+  purple: { b: 176, g: 39, r: 156 },
+  red: { b: 53, g: 67, r: 234 },
+  yellow: { b: 4, g: 188, r: 251 },
 } as const;
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
-  enabled: true,
   closeSingleTabGroups: true,
-  sortGroupsAlphabetically: false,
-  moveRecentlyTabToRight: false,
-  moveRecentlyTabToRightGroup: false,
-  moveRecentlyTabToRightBeforeNewTab: false,
-  ignorePinnedTabs: true,
-  groupChromePages: false,
   collapseGroupsWhenNotInUse: false,
-  useUuidTracker: false,
+  enabled: true,
+  groupChromePages: false,
+  ignorePinnedTabs: true,
+  moveRecentlyTabToRight: false,
+  moveRecentlyTabToRightBeforeNewTab: false,
+  moveRecentlyTabToRightGroup: false,
   renameGroupToSiteName: true,
   respectSplitView: true,
+  sortGroupsAlphabetically: false,
+  useUuidTracker: false,
 } as const;
 
 export const IGNORED_PROTOCOLS = new Set([

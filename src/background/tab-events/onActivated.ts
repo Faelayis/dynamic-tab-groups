@@ -184,9 +184,9 @@ async function moveUngroupedTabToRight(
     "[Dynamic Tab Groups] [BeforeNewTab][diag] ungrouped tabs:",
     ungroupedTabs.map((t) => ({
       index: t.index,
-      url: t.url,
-      pendingUrl: t.pendingUrl,
       isNewTab: isNewTabPage(t),
+      pendingUrl: t.pendingUrl,
+      url: t.url,
     })),
   );
 

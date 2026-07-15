@@ -1,6 +1,6 @@
 import { getSettings } from "../shared/storage/index.ts";
-import { handleTabUuidReport } from "./message-handlers/tab-uuid.ts";
 import { handleSiteNameReport } from "./message-handlers/site-name.ts";
+import { handleTabUuidReport } from "./message-handlers/tab-uuid.ts";
 
 export function setupMessageHandlers() {
   chrome.runtime.onMessage.addListener(async (message, sender) => {

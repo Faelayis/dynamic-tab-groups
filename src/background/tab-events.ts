@@ -1,11 +1,11 @@
 import { onActivated } from "./tab-events/onActivated.ts";
-import { onCreated } from "./tab-events/onCreated.ts";
-import { onUpdated } from "./tab-events/onUpdated.ts";
-import { onRemoved } from "./tab-events/onRemoved.ts";
 import { onAttached } from "./tab-events/onAttached.ts";
-import { onDetached } from "./tab-events/onDetached.ts";
 import { onBoundsChanged } from "./tab-events/onBoundsChanged.ts";
+import { onCreated } from "./tab-events/onCreated.ts";
+import { onDetached } from "./tab-events/onDetached.ts";
+import { onRemoved } from "./tab-events/onRemoved.ts";
 import { onStorageChanged } from "./tab-events/onStorageChanged.ts";
+import { onUpdated } from "./tab-events/onUpdated.ts";
 
 export function setupTabEvents() {
   chrome.tabs.onActivated.addListener(onActivated);

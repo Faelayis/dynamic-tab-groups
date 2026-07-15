@@ -45,11 +45,11 @@ export function extractFromPixels(
     const key = `${br},${bg},${bb}`;
 
     const bucket = buckets.get(key) ?? {
-      totalR: 0,
-      totalG: 0,
-      totalB: 0,
       count: 0,
       satSum: 0,
+      totalB: 0,
+      totalG: 0,
+      totalR: 0,
     };
     bucket.totalR += r;
     bucket.totalG += g;
@@ -76,8 +76,8 @@ export function extractFromPixels(
   if (!best) return null;
 
   return {
-    r: Math.round(best.totalR / best.count),
-    g: Math.round(best.totalG / best.count),
     b: Math.round(best.totalB / best.count),
+    g: Math.round(best.totalG / best.count),
+    r: Math.round(best.totalR / best.count),
   };
 }

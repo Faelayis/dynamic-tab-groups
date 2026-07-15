@@ -1,5 +1,5 @@
-import { scheduleEvaluation } from "../tab-manager/evaluation.ts";
 import { getDisplayIdForWindow } from "../tab-manager/display.ts";
+import { scheduleEvaluation } from "../tab-manager/evaluation.ts";
 import { tabIdToUuid } from "../uuid-tracker/tabIdToUuid.ts";
 
 export async function onAttached(

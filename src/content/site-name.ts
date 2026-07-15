@@ -5,8 +5,8 @@ export function extractAndReportSiteName() {
       const siteName = metaTag.getAttribute("content");
       if (siteName && siteName.trim() !== "") {
         chrome.runtime.sendMessage({
-          type: "OG_SITE_NAME_REPORT",
           siteName: siteName.trim(),
+          type: "OG_SITE_NAME_REPORT",
         });
       }
     }

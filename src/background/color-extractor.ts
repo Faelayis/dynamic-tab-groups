@@ -55,20 +55,20 @@ interface FilterOptions {
 function computeDominantColor(data: Uint8ClampedArray): RGB {
   return (
     extractFromPixels(data, {
-      minSaturation: 0.12,
-      minBrightness: 20,
       maxBrightness: 236,
+      minBrightness: 20,
+      minSaturation: 0.12,
     }) ??
     extractFromPixels(data, {
-      minSaturation: 0.04,
-      minBrightness: 8,
       maxBrightness: 248,
+      minBrightness: 8,
+      minSaturation: 0.04,
     }) ??
     extractFromPixels(data, {
-      minSaturation: 0,
-      minBrightness: 0,
       maxBrightness: 255,
-    }) ?? { r: 154, g: 160, b: 166 }
+      minBrightness: 0,
+      minSaturation: 0,
+    }) ?? { b: 166, g: 160, r: 154 }
   );
 }
 
@@ -108,11 +108,11 @@ function extractFromPixels(data: Uint8ClampedArray, filters: FilterOptions): RGB
     const key = `${br},${bg},${bb}`;
 
     const bucket = buckets.get(key) ?? {
-      totalR: 0,
-      totalG: 0,
-      totalB: 0,
       count: 0,
       satSum: 0,
+      totalB: 0,
+      totalG: 0,
+      totalR: 0,
     };
     bucket.totalR += r;
     bucket.totalG += g;
@@ -139,9 +139,9 @@ function extractFromPixels(data: Uint8ClampedArray, filters: FilterOptions): RGB
   if (!best) return null;
 
   return {
-    r: Math.round(best.totalR / best.count),
-    g: Math.round(best.totalG / best.count),
     b: Math.round(best.totalB / best.count),
+    g: Math.round(best.totalG / best.count),
+    r: Math.round(best.totalR / best.count),
   };
 }
 

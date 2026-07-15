@@ -14,13 +14,13 @@ export async function createOrUpdateGroup(
   let groupId: number;
   if (existingGroupId !== undefined) {
     groupId = await chrome.tabs.group({
-      tabIds: tabIdsTuple,
       groupId: existingGroupId,
+      tabIds: tabIdsTuple,
     });
   } else {
     groupId = await chrome.tabs.group({
-      tabIds: tabIdsTuple,
       createProperties: { windowId },
+      tabIds: tabIdsTuple,
     });
   }
 

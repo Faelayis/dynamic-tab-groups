@@ -4,19 +4,19 @@ import { extractFromPixels } from "./extractFromPixels.ts";
 export function computeDominantColor(data: Uint8ClampedArray): RGB {
   return (
     extractFromPixels(data, {
-      minSaturation: 0.12,
-      minBrightness: 20,
       maxBrightness: 236,
+      minBrightness: 20,
+      minSaturation: 0.12,
     }) ??
     extractFromPixels(data, {
-      minSaturation: 0.04,
-      minBrightness: 8,
       maxBrightness: 248,
+      minBrightness: 8,
+      minSaturation: 0.04,
     }) ??
     extractFromPixels(data, {
-      minSaturation: 0,
-      minBrightness: 0,
       maxBrightness: 255,
-    }) ?? { r: 154, g: 160, b: 166 }
+      minBrightness: 0,
+      minSaturation: 0,
+    }) ?? { b: 166, g: 160, r: 154 }
   );
 }

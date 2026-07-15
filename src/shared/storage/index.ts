@@ -1,5 +1,5 @@
-import { DEFAULT_SETTINGS } from "../constants/index.ts";
 import type { ExtensionSettings } from "../../types/index.ts";
+import { DEFAULT_SETTINGS } from "../constants/index.ts";
 
 const STORAGE_KEY = "settings";
 

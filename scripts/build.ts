@@ -8,10 +8,10 @@ await resetOutput();
 
 const result = await Bun.build({
   entrypoints: ENTRYPOINTS,
-  outdir: OUT_DIR,
-  target: "browser",
   minify: true,
   naming: "[name].[ext]",
+  outdir: OUT_DIR,
+  target: "browser",
 });
 
 if (!result.success) {

@@ -1,5 +1,5 @@
-import { initAutoTabsUUID } from "./uuid.ts";
 import { extractAndReportSiteName } from "./site-name.ts";
+import { initAutoTabsUUID } from "./uuid.ts";
 
 initAutoTabsUUID();
 

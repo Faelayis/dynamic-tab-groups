@@ -39,6 +39,9 @@ async function syncStaticAssets(): Promise<void> {
 }
 
 const builder = Bun.spawn({
+  stderr: "inherit",
+  stdin: "inherit",
+  stdout: "inherit",
   cmd: [
     bunExecutable,
     "build",
@@ -51,9 +54,6 @@ const builder = Bun.spawn({
     "[name].[ext]",
     "--watch",
   ],
-  stdin: "inherit",
-  stdout: "inherit",
-  stderr: "inherit",
 });
 
 const staticAssetsTimer = setInterval(() => {

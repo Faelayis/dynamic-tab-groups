@@ -23,11 +23,11 @@ export async function moveNewTabToRight(tab: chrome.tabs.Tab): Promise<void> {
       if (tabsInGroup.length > 0) {
         const maxIndex = Math.max(...tabsInGroup.map((t) => t.index));
         if (tab.index < maxIndex) {
-          await chrome.tabs.move(tab.id, { windowId: tab.windowId, index: maxIndex });
+          await chrome.tabs.move(tab.id, { index: maxIndex, windowId: tab.windowId });
         }
       }
     } else {
-      await chrome.tabs.move(tab.id, { windowId: tab.windowId, index: -1 });
+      await chrome.tabs.move(tab.id, { index: -1, windowId: tab.windowId });
     }
   } catch (error) {
     console.warn("[Dynamic Tab Groups] Failed to move tab to right:", error);
