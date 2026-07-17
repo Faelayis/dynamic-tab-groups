@@ -4,7 +4,7 @@
   "manifest_version": 3,
   "minimum_chrome_version": "120",
   "name": "Dynamic Tab Groups",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "background": {
     "service_worker": "background.js"
   },

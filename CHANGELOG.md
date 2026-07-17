@@ -1,3 +1,26 @@
+## [0.1.2](https://github.com/Faelayis/dynamic-tab-groups/compare/v0.1.1...v0.1.2) (2026-07-17)
+
+### Bug Fixes
+
+* **changelog:** preserve author mentions in release notes ([4db0580](https://github.com/Faelayis/dynamic-tab-groups/commit/4db05808a99e19b0a628c901550baa62d03bc8c2)) by [@Faelayis](https://github.com/Faelayis)
+* resolve Biome lint errors ([b4fa84b](https://github.com/Faelayis/dynamic-tab-groups/commit/b4fa84bd552970214c352ea58f5e3ce67f1e064e)) by [@Faelayis](https://github.com/Faelayis)
+
+### Documentation
+
+* **changelog:** update CHANGELOG.md ([11f4d26](https://github.com/Faelayis/dynamic-tab-groups/commit/11f4d2651a641b44b41fcf4ee18b88f06b9351bf)) by [@Faelayis](https://github.com/Faelayis)
+
+### Styles
+
+* format code ([bc44edd](https://github.com/Faelayis/dynamic-tab-groups/commit/bc44eddd13a65a8742c127644b24c7d979a8dfa1)) by [@Faelayis](https://github.com/Faelayis)
+
+### Miscellaneous Chores
+
+* **tooling:** configure Biome formatting ([3ed5da1](https://github.com/Faelayis/dynamic-tab-groups/commit/3ed5da1ee1302c97e17986c2db6de52aa4b2fe08)) by [@Faelayis](https://github.com/Faelayis)
+* **tooling:** configure VS Code formatting ([682d32b](https://github.com/Faelayis/dynamic-tab-groups/commit/682d32bca63cd42b0c9420c7075f581a3a81ab09)) by [@Faelayis](https://github.com/Faelayis)
+
+### Continuous Integration
+
+* add changelog workflow and update tooling ([fadf377](https://github.com/Faelayis/dynamic-tab-groups/commit/fadf377e4c65bf894a1c179f4b39313988fa63ff)) by [@Faelayis](https://github.com/Faelayis)
 
 ## [0.1.1](https://github.com/Faelayis/dynamic-tab-groups/compare/v0.1.0...v0.1.1) (2026-07-15)
 
